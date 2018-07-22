@@ -4,29 +4,29 @@ Spyder Editor
 
 This is a temporary script file.
 """
-import requests,bs4,time
-def scrape( url ):
-    res=requests.get(url)
-    res.raise_for_status
-    nostarch = bs4.BeautifulSoup(res.text , "html.parser")
-    print (nostarch.prettify())
-    a = nostarch.select("b")
-    print (a)
-    print ("Working?")
+import re,time
+from selenium import webdriver
+    
 def main():
-    from selenium import webdriver
-    driver = webdriver.Firefox(executable_path=r"C:\Users\Harikrishn\Desktop\Arun's Stuff(TOXIC AF)\geckodriver.exe")
+    fp = open("name.txt" , "w+")
+    driver = webdriver.Firefox()
     driver.get("http://results.cusat.ac.in/regforms/regno1.php")
     regno = driver.find_element_by_name("rno")
     regno.clear()
     button = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/input")
-    regno.send_keys('12180021')
-    button.click()
-    scrape(driver.current_url)
-    time.sleep(5)
-    driver.back()
-    regno = driver.find_element_by_name("rno")
-    regno.clear()
+    for i in range(12180000,12180094):
+        name_regex = re.compile(r'<b>\w+ (\w+)?')
+        regno.send_keys(str(i))
+        button = driver.find_element_by_xpath("/html/body/form/table/tbody/tr[4]/td/input")
+        button.click()
+        time.sleep(10)
+        name  = name_regex.search(driver.page_source) 
+        name_final = name.group().split('>')
+        print (name_final[1])
+        fp.write(name_final[1])
+        driver.back()
+        regno = driver.find_element_by_name("rno")
+        regno.clear()
+        time.sleep(4)
+    fp.close()
 main()
-
-
